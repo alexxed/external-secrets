@@ -164,7 +164,7 @@ func sessionFromSecretRef(ctx context.Context, prov *esv1beta1.AWSProvider, stor
 		return nil, fmt.Errorf(errMissingAKID)
 	}
 
-	return credentials.NewStaticCredentials(aks, sak, ""), err
+	return credentials.NewEnvCredentials(), err
 }
 
 func sessionFromServiceAccount(ctx context.Context, prov *esv1beta1.AWSProvider, store esv1beta1.GenericStore, kube client.Client, namespace string, jwtProvider jwtProviderFactory) (*credentials.Credentials, error) {
@@ -225,7 +225,7 @@ func DefaultJWTProvider(name, namespace, roleArn, aud, region string) (credentia
 	}
 	sess, err := session.NewSessionWithOptions(session.Options{
 		Config:            *awscfg,
-		SharedConfigState: session.SharedConfigDisable,
+		SharedConfigState: session.SharedConfigEnable,
 		Handlers:          handlers,
 	})
 	if err != nil {
@@ -271,7 +271,7 @@ func getAWSSession(config *aws.Config, store esv1beta1.GenericStore, namespace s
 	sess, err := session.NewSessionWithOptions(session.Options{
 		Config:            *config,
 		Handlers:          handlers,
-		SharedConfigState: session.SharedConfigDisable,
+		SharedConfigState: session.SharedConfigEnable,
 	})
 	if err != nil {
 		return nil, err
